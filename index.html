@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>البحث عن المنتج بالكود</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Changa:wght@700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color-bg: #12172b;
+  --color-bg-glow: #1e2550;
+  --color-paper: #f7f4ec;
+  --color-ink: #171a2b;
+  --color-accent: #ff4b3e;
+  --color-accent-hover: #e63b2f;
+  --color-accent-2: #ffb020;
+  --color-success: #1f7a4d;
+  --color-muted: #7d8296;
+  --color-border: rgba(23, 26, 43, 0.14);
+  --font-display: "Changa", sans-serif;
+  --font-body: "Cairo", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --radius: 18px;
+  --shadow: 0 24px 60px rgba(9, 12, 26, 0.35);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  color: var(--color-paper);
+  background:
+    repeating-linear-gradient(90deg, rgba(247,244,236,0.035) 0 2px, transparent 2px 6px, rgba(247,244,236,0.02) 6px 8px, transparent 8px 14px),
+    radial-gradient(circle at 20% -10%, var(--color-bg-glow) 0%, transparent 55%),
+    var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+button:focus-visible, input:focus-visible { outline: 3px solid var(--color-accent-2); outline-offset: 2px; }
+
+.barcode {
+  height: 26px;
+  width: 65%;
+  margin: 0 auto 18px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--color-ink) 0 2px, transparent 2px 5px,
+    var(--color-ink) 5px 6px, transparent 6px 11px,
+    var(--color-ink) 11px 14px, transparent 14px 17px,
+    var(--color-ink) 17px 20px, transparent 20px 24px
+  );
+}
+.eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: var(--color-accent);
+  margin-bottom: 10px;
+}
+.card {
+  position: relative;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  width: 100%;
+  max-width: 440px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 44px 36px 36px;
+  text-align: center;
+}
+.card::before, .card::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  background: var(--color-bg);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.card::before { left: -14px; }
+.card::after { right: -14px; }
+.card h1 { font-family: var(--font-display); font-size: 26px; margin: 0 0 8px; }
+.subtitle { color: var(--color-muted); font-size: 14px; line-height: 1.7; margin: 0 0 30px; }
+
+.scanner-slot {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  padding: 4px;
+  overflow: hidden;
+}
+.scanner-slot::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -5%;
+  width: 6px;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px 2px var(--color-accent);
+  opacity: 0;
+}
+.scanner-slot.scanning::after { opacity: 1; animation: scan 0.9s ease-in-out; }
+@keyframes scan {
+  0%   { left: -5%; opacity: 1; }
+  50%  { left: 95%; opacity: 1; }
+  100% { left: 95%; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scanner-slot.scanning::after { animation: none; opacity: 0; }
+}
+#codeInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  letter-spacing: 3px;
+  text-align: center;
+  padding: 14px 6px;
+  color: var(--color-ink);
+}
+#codeInput::placeholder { color: #c7c2b4; letter-spacing: 2px; }
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0 22px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.btn-primary:hover { background: var(--color-accent-hover); transform: translateY(-1px); }
+.perforation { border-top: 2px dashed var(--color-border); margin: 26px 0 16px; }
+.message { font-family: var(--font-mono); font-size: 13px; min-height: 18px; margin: 0; }
+.message.error { color: #c81e13; }
+.message.success { color: var(--color-success); }
+@media (max-width: 480px) { .card { padding: 30px 22px; } }
+</style>
+</head>
+<body>
+
+  <main class="card">
+    <div class="barcode"></div>
+    <span class="eyebrow">امسح · ابحث · انطلق</span>
+    <h1>البحث عن المنتج</h1>
+    <p class="subtitle">أدخل كود المنتج، وسيتم تحويلك تلقائياً إلى صفحته</p>
+
+    <form id="searchForm" novalidate>
+      <div class="scanner-slot" id="scannerSlot">
+        <input
+          type="text"
+          id="codeInput"
+          inputmode="text"
+          placeholder="مثال: 1001"
+          autocomplete="off"
+          autofocus
+        >
+        <button type="submit" class="btn-primary">بحث</button>
+      </div>
+    </form>
+
+    <div class="perforation"></div>
+    <p id="message" class="message" role="status" aria-live="polite"></p>
+  </main>
+
+  <!--
+    ================================================================
+    هنا فقط تضيف منتجاتك — لا حاجة لأي معرفة برمجية.
+
+    كل سطر بهذا الشكل:      الكود = الرابط
+    مثال:                   2054 = https://example.com/product-shoes
+
+    - سطر واحد لكل منتج.
+    - لا تحتاج علامات تنصيص ولا فواصل ولا أقواس، فقط "الكود = الرابط".
+    - أي سطر يبدأ بـ # يُعتبر تعليقاً ويتم تجاهله (مثل هذا الشرح).
+    - الأسطر الفارغة يتم تجاهلها أيضاً.
+    ================================================================
+  -->
+  <script type="text/plain" id="productsData">
+    # أضف منتجاتك تحت هذا السطر، سطر واحد لكل منتج:
+
+    1001 = https://example.com/products/product-1
+    1002 = https://example.com/products/product-2
+    1003 = https://example.com/products/product-3
+1=https://www.youtube.com/
+  </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // ------------------------------------------------------------
+  // قراءة قائمة المنتجات من الكتلة أعلاه وتحويلها لقائمة قابلة للبحث
+  // ------------------------------------------------------------
+  const rawData = document.getElementById("productsData").textContent;
+  const products = {};
+
+  rawData.split("\n").forEach((rawLine) => {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) return;
+
+    const separatorIndex = line.indexOf("=");
+    if (separatorIndex === -1) return;
+
+    const code = line.slice(0, separatorIndex).trim();
+    const link = line.slice(separatorIndex + 1).trim();
+    if (code && link) products[code] = link;
+  });
+
+  // ------------------------------------------------------------
+  // منطق خانة البحث والتحويل التلقائي
+  // ------------------------------------------------------------
+  const form = document.getElementById("searchForm");
+  const input = document.getElementById("codeInput");
+  const message = document.getElementById("message");
+  const scannerSlot = document.getElementById("scannerSlot");
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const code = input.value.trim();
+
+    scannerSlot.classList.remove("scanning");
+    void scannerSlot.offsetWidth;
+    scannerSlot.classList.add("scanning");
+
+    if (!code) {
+      showMessage("الرجاء إدخال كود المنتج", "error");
+      return;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(products, code)) {
+      showMessage("تم العثور على المنتج، جاري التحويل...", "success");
+      setTimeout(() => {
+        window.location.href = products[code];
+      }, 500);
+    } else {
+      showMessage("لم يتم العثور على هذا الكود، الرجاء التأكد والمحاولة مرة أخرى", "error");
+    }
+  });
+
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
+  }
+});
+</script>
+</body>
+</html>
